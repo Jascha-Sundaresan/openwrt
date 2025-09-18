@@ -1433,6 +1433,64 @@ define Device/netcore_n60
 endef
 TARGET_DEVICES += netcore_n60
 
+define Device/netcore_n60-pro
+  DEVICE_VENDOR := Netcore
+  DEVICE_MODEL := N60 Pro
+  DEVICE_DTS := mt7986a-netcore-n60-pro
+  DEVICE_DTS_DIR := ../dts
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_IN_UBI := 1
+  UBOOTENV_IN_UBI := 1
+  IMAGES := sysupgrade.itb
+  KERNEL_INITRAMFS_SUFFIX := -recovery.itb
+  KERNEL := kernel-bin | gzip
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+        fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  IMAGE/sysupgrade.itb := append-kernel | \
+        fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware kmod-usb3
+  ARTIFACTS := preloader.bin bl31-uboot.fip
+  ARTIFACT/preloader.bin := mt7986-bl2 spim-nand-ddr4
+  ARTIFACT/bl31-uboot.fip := mt7986-bl31-uboot netcore_n60-pro
+endef
+TARGET_DEVICES += netcore_n60-pro
+
+define Device/netgear_eax17
+  DEVICE_VENDOR := NETGEAR
+  DEVICE_MODEL := EAX17
+  DEVICE_ALT0_VENDOR := NETGEAR
+  DEVICE_ALT0_MODEL := EAX11
+  DEVICE_ALT0_VARIANT := v3
+  DEVICE_ALT1_VENDOR := NETGEAR
+  DEVICE_ALT1_MODEL := EAX15
+  DEVICE_ALT1_VARIANT := v3
+  DEVICE_ALT2_VENDOR := NETGEAR
+  DEVICE_ALT2_MODEL := EAX14
+  DEVICE_ALT2_VARIANT := v3
+  DEVICE_ALT3_VENDOR := NETGEAR
+  DEVICE_ALT3_MODEL := EAX12
+  DEVICE_ALT3_VARIANT := v2
+  DEVICE_ALT4_VENDOR := NETGEAR
+  DEVICE_ALT4_MODEL := EAX16
+  DEVICE_ALT5_VENDOR := NETGEAR
+  DEVICE_ALT5_MODEL := EAX19
+  DEVICE_DTS := mt7981b-netgear-eax17
+  DEVICE_DTS_DIR := ../dts
+  SUPPORTED_DEVICES += mediatek,mt7981-spim-snand-rfb
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
+  KERNEL = kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-netgear-rootfs-node
+  KERNEL_IN_UBI := 1
+  IMAGE_SIZE := 81920k
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += netgear_eax17
+
 define Device/netgear_wax220
   DEVICE_VENDOR := NETGEAR
   DEVICE_MODEL := WAX220
